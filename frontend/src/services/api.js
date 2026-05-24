@@ -1,41 +1,27 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE = "https://ai-code-review-assistant-o7vm.onrender.com/api";
 
-const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add token to requests
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
+// AUTH API
 export const authAPI = {
-  register: (userData) => api.post('/auth/register', userData),
-  login: (credentials) => api.post('/auth/login', credentials),
-  verify: () => api.get('/auth/verify'),
+  login: (data) => axios.post(`${API_BASE}/auth/login`, data),
+
+  register: (data) => axios.post(`${API_BASE}/auth/register`, data),
+
+  verify: () =>
+    axios.get(`${API_BASE}/auth/verify`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }),
 };
 
+// REVIEW API (optional but recommended)
 export const reviewAPI = {
-  analyze: (code, language, beginnerMode) => 
-    api.post('/review/analyze', { code, language, beginner_mode: beginnerMode }),
-  uploadFile: (file, beginnerMode) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('beginner_mode', beginnerMode);
-    return api.post('/review/upload', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-  },
-  getHistory: () => api.get('/history/reviews'),
+  analyze: (data) =>
+    axios.post(`${API_BASE}/review/analyze`, data, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }),
 };
-
-export default api;
