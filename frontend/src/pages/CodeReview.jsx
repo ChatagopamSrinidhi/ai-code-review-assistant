@@ -9,14 +9,20 @@ export default function CodeReview() {
   const [loading, setLoading] = useState(false);
 
   const handleReview = async () => {
-    if (!code) return toast.error("Please enter code");
+    if (!code) {
+      toast.error("Please enter code");
+      return;
+    }
 
     setLoading(true);
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/review/analyze",
-        { code, language },
+        "https://ai-code-review-assistant-o7vm.onrender.com/api/review/analyze",
+        {
+          code,
+          language,
+        },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -27,6 +33,7 @@ export default function CodeReview() {
       setResult(res.data);
       toast.success("Review completed!");
     } catch (err) {
+      console.log(err);
       toast.error("Failed to analyze code");
     }
 
@@ -35,7 +42,6 @@ export default function CodeReview() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
-
       <h1 className="text-3xl font-bold mb-6">
         AI Code Review 🔥
       </h1>
@@ -50,15 +56,16 @@ export default function CodeReview() {
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
           >
-            <option>javascript</option>
-            <option>python</option>
-            <option>java</option>
-            <option>c++</option>
+            <option value="javascript">javascript</option>
+            <option value="python">python</option>
+            <option value="java">java</option>
+            <option value="c++">c++</option>
           </select>
 
           <textarea
             className="w-full h-80 p-3 bg-gray-900 rounded text-sm outline-none"
             placeholder="Paste your code here..."
+            value={code}
             onChange={(e) => setCode(e.target.value)}
           />
 
@@ -86,18 +93,26 @@ export default function CodeReview() {
             <div className="space-y-3">
 
               <div className="bg-gray-900 p-3 rounded">
-                <h3 className="text-green-400">Summary</h3>
+                <h3 className="text-green-400 font-bold mb-2">
+                  Summary
+                </h3>
                 <p>{result.summary}</p>
               </div>
 
               <div className="bg-gray-900 p-3 rounded">
-                <h3 className="text-yellow-400">Issues</h3>
-                <pre className="text-sm">{result.issues}</pre>
+                <h3 className="text-yellow-400 font-bold mb-2">
+                  Issues
+                </h3>
+                <pre className="text-sm whitespace-pre-wrap">
+                  {result.issues}
+                </pre>
               </div>
 
               <div className="bg-gray-900 p-3 rounded">
-                <h3 className="text-blue-400">Improved Code</h3>
-                <pre className="text-sm overflow-x-auto">
+                <h3 className="text-blue-400 font-bold mb-2">
+                  Improved Code
+                </h3>
+                <pre className="text-sm overflow-x-auto whitespace-pre-wrap">
                   {result.improved_code}
                 </pre>
               </div>
