@@ -4,38 +4,38 @@ review_bp = Blueprint('review', __name__)
 
 @review_bp.route('/analyze', methods=['POST'])
 def analyze_code():
-    try:
-        data = request.get_json()
+    data = request.get_json()
 
-        print("DATA:", data)
+    code = data.get("code", "")
+    language = data.get("language", "python")
 
-        code = data.get("code", "")
-        language = data.get("language", "python")
+    issues = []
 
-        fake_review = f"""
-Code looks good overall.
+    # ---------- REAL CHECKS ----------
 
-Language: {language}
+    if "(" in code and ")" not in code:
+        issues.append("Missing closing parenthesis ')'")
 
-Suggestions:
-1. Add comments
-2. Improve variable names
-3. Add error handling
-4. Follow clean coding standards
+    if "{" in code and "}" not in code:
+        issues.append("Missing closing brace '}'")
 
-Submitted Code:
-{code}
-"""
+    if language == "python":
+        if "print(" in code and (code.count('"') % 2 != 0 and code.count("'") % 2 != 0):
+            issues.append("Possible string syntax issue in print statement")
 
-        return jsonify({
-            "summary": "Analysis completed successfully",
-            "issues": fake_review,
-            "improved_code": code
-        })
+    if "/ 0" in code or "/0" in code:
+        issues.append("Possible division by zero")
 
-    except Exception as e:
-        print("ERROR:", str(e))
+    if len(code.strip()) == 0:
+        return jsonify({"error": "Empty code"}), 400
 
-        return jsonify({
-            "error": str(e)
-        }), 500
+    if not issues:
+        issues.append("No major issues found")
+
+    improved_code = f"""# Improved Code\n{code}\n\n# Suggestion: add comments + error handling"""
+
+    return jsonify({
+        "summary": f"{language} code analyzed",
+        "issues": "\n".join(issues),
+        "improved_code": improved_code
+    })
