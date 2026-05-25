@@ -12,16 +12,21 @@ export default function CodeReview() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // ✅ PRODUCTION SAFE API URL
+  const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://ai-code-review-assistant-o7vm.onrender.com";
+
   const handleReview = async () => {
     if (!code.trim()) {
-      return toast.error("Enter code first");
+      return toast.error("Please enter some code first");
     }
 
     setLoading(true);
 
     try {
       const res = await axios.post(
-        "http://127.0.0.1:5000/api/review/analyze",
+        `${API_URL}/api/review/analyze`,
         {
           code,
           language,
@@ -29,24 +34,29 @@ export default function CodeReview() {
       );
 
       setResult(res.data);
-
       toast.success("AI Review completed");
     } catch (err) {
-      console.log(err);
-
-      toast.error("Failed to analyze code");
+      console.error(err);
+      toast.error(
+        err?.response?.data?.error || "Failed to analyze code"
+      );
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const copyCode = () => {
-    navigator.clipboard.writeText(result?.improved_code || "");
-    toast.success("Code copied");
+    if (!result?.improved_code) {
+      return toast.error("No code to copy");
+    }
+
+    navigator.clipboard.writeText(result.improved_code);
+    toast.success("Improved code copied");
   };
 
   return (
     <div className="min-h-screen p-6 text-white relative">
+
       <BackButton />
 
       <h1 className="text-4xl font-bold text-center mb-8">
@@ -79,6 +89,7 @@ export default function CodeReview() {
           <button
             onClick={handleReview}
             className="btn-primary w-full mt-4"
+            disabled={loading}
           >
             {loading ? "Analyzing..." : "Review Code"}
           </button>
@@ -93,41 +104,42 @@ export default function CodeReview() {
               AI analysis will appear here...
             </p>
           ) : (
-            <div className="space-y-5">
+            <div className="space-y-6">
 
               {/* SUMMARY */}
               <div>
-                <h2 className="text-xl font-bold mb-2">
-                  Summary
-                </h2>
-
-                <p>{result.summary}</p>
+                <h2 className="text-xl font-bold mb-2">Summary</h2>
+                <p className="text-gray-200">
+                  {result.summary}
+                </p>
               </div>
 
               {/* ISSUES */}
               <div>
-                <h2 className="text-xl font-bold mb-2">
-                  Issues Found
-                </h2>
-
-                <ul className="list-disc pl-5">
-                  {result.issues?.map((issue, index) => (
-                    <li key={index}>{issue}</li>
-                  ))}
-                </ul>
+                <h2 className="text-xl font-bold mb-2">Issues Found</h2>
+                {result.issues?.length ? (
+                  <ul className="list-disc pl-5 text-gray-200">
+                    {result.issues.map((issue, index) => (
+                      <li key={index}>{issue}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-green-400">No issues found 🎉</p>
+                )}
               </div>
 
               {/* SUGGESTIONS */}
               <div>
-                <h2 className="text-xl font-bold mb-2">
-                  Suggestions
-                </h2>
-
-                <ul className="list-disc pl-5">
-                  {result.suggestions?.map((item, index) => (
-                    <li key={index}>{item}</li>
-                  ))}
-                </ul>
+                <h2 className="text-xl font-bold mb-2">Suggestions</h2>
+                {result.suggestions?.length ? (
+                  <ul className="list-disc pl-5 text-gray-200">
+                    {result.suggestions.map((item, index) => (
+                      <li key={index}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-400">No suggestions</p>
+                )}
               </div>
 
               {/* IMPROVED CODE */}
@@ -150,11 +162,11 @@ export default function CodeReview() {
                   style={oneDark}
                   customStyle={{
                     borderRadius: "12px",
-                    padding: "20px",
+                    padding: "16px",
                     fontSize: "14px",
                   }}
                 >
-                  {result.improved_code}
+                  {result.improved_code || ""}
                 </SyntaxHighlighter>
 
               </div>
