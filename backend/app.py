@@ -1,32 +1,26 @@
-from flask import Flask, jsonify
+from flask import Flask
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager
-from models.database import db
-from config import Config
+from dotenv import load_dotenv
 import os
 
-app = Flask(__name__)
-app.config.from_object(Config)
+# LOAD ENV FILE
+load_dotenv()
 
-CORS(app)
-jwt = JWTManager(app)
-db.init_app(app)
-
-# Import routes (create these next)
-from routes.auth import auth_bp
 from routes.review import review_bp
 
-app.register_blueprint(auth_bp, url_prefix='/api/auth')
-app.register_blueprint(review_bp, url_prefix='/api/review')
+app = Flask(__name__)
 
-# Create tables
-with app.app_context():
-    os.makedirs('database', exist_ok=True)
-    db.create_all()
+# CORS
+CORS(app)
 
-@app.route('/health', methods=['GET'])
-def health():
-    return jsonify({'status': 'healthy'}), 200
+# REGISTER ROUTES
+app.register_blueprint(review_bp, url_prefix="/api/review")
 
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+@app.route("/")
+def home():
+    return {
+        "message": "AI Code Review Backend Running"
+    }
+
+if __name__ == "__main__":
+    app.run(debug=True)

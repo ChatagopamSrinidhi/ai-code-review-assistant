@@ -26,11 +26,11 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-[#0b0f19] text-white">
 
-      <div className="bg-gray-800 p-8 rounded-xl w-96 shadow-lg">
+      <div className="bg-white/5 border border-white/10 p-8 rounded-xl w-96">
 
-        <h2 className="text-2xl font-bold text-white mb-6 text-center">
+        <h2 className="text-2xl font-bold mb-6 text-center">
           Create Account
         </h2>
 
@@ -41,7 +41,7 @@ export default function Register() {
             name="username"
             placeholder="Username"
             onChange={handleChange}
-            className="w-full p-3 rounded bg-gray-700 text-white outline-none"
+            className="w-full p-3 rounded bg-black/40 outline-none"
             required
           />
 
@@ -50,7 +50,7 @@ export default function Register() {
             name="email"
             placeholder="Email"
             onChange={handleChange}
-            className="w-full p-3 rounded bg-gray-700 text-white outline-none"
+            className="w-full p-3 rounded bg-black/40 outline-none"
             required
           />
 
@@ -59,13 +59,13 @@ export default function Register() {
             name="password"
             placeholder="Password"
             onChange={handleChange}
-            className="w-full p-3 rounded bg-gray-700 text-white outline-none"
+            className="w-full p-3 rounded bg-black/40 outline-none"
             required
           />
 
           <button
             type="submit"
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded font-semibold"
+            className="w-full bg-purple-600 hover:bg-purple-700 py-3 rounded font-semibold"
           >
             Register
           </button>

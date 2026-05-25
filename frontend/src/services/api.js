@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API_BASE = "https://ai-code-review-assistant-o7vm.onrender.com/api";
 
-// AUTH API
+// AUTH
 export const authAPI = {
   login: (data) => axios.post(`${API_BASE}/auth/login`, data),
 
@@ -16,7 +16,7 @@ export const authAPI = {
     }),
 };
 
-// REVIEW API (optional but recommended)
+// REVIEW
 export const reviewAPI = {
   analyze: (data) =>
     axios.post(`${API_BASE}/review/analyze`, data, {

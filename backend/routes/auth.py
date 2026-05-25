@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
+from models import db, User
 
 auth_bp = Blueprint('auth', __name__)
 
-users = {}
-
+# ---------------- REGISTER ----------------
 @auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.json
@@ -12,14 +12,12 @@ def register():
     email = data.get("email")
     password = data.get("password")
 
-    if email in users:
+    if User.query.filter_by(email=email).first():
         return jsonify({"error": "User already exists"}), 400
 
-    users[email] = {
-        "username": username,
-        "email": email,
-        "password": password
-    }
+    user = User(username=username, email=email, password=password)
+    db.session.add(user)
+    db.session.commit()
 
     return jsonify({
         "message": "User registered successfully",
@@ -28,24 +26,21 @@ def register():
     }), 200
 
 
+# ---------------- LOGIN ----------------
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.json
+
     email = data.get("email")
     password = data.get("password")
 
-    user = users.get(email)
+    user = User.query.filter_by(email=email).first()
 
-    if not user or user["password"] != password:
+    if not user or user.password != password:
         return jsonify({"error": "Invalid credentials"}), 401
 
     return jsonify({
         "message": "Login successful",
         "token": "fake-jwt-token",
-        "user": user
+        "user": {"username": user.username, "email": user.email}
     }), 200
-
-
-@auth_bp.route('/verify', methods=['GET'])
-def verify():
-    return jsonify({"user": {"name": "test user"}}), 200

@@ -2,8 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  body {
-    @apply bg-gray-900 text-white;
-  }
+body {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(circle at top, #1a1f2e, #0b0f19);
+  color: white;
+  font-family: ui-sans-serif, system-ui;
+}
+
+/* Glassmorphism Card */
+.glass {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Premium Button */
+.btn-primary {
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: scale(1.03);
+  opacity: 0.95;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4f46e5;
+  border-radius: 10px;
 }

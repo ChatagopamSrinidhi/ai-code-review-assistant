@@ -1,61 +1,70 @@
 import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
 
-  const handleLogin = async (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const success = await login({ email, password });
-    if (success) navigate("/dashboard");
+
+    const success = await login(formData);
+    if (success) {
+      navigate("/dashboard");
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#0b0f19] text-white">
 
-      <div className="w-full max-w-md bg-gray-900/60 backdrop-blur-xl border border-gray-700 rounded-2xl p-8 shadow-xl">
+      <div className="bg-white/5 border border-white/10 p-8 rounded-xl w-96">
 
-        <h1 className="text-3xl font-bold text-center text-white mb-2">
-          Welcome Back 👋
-        </h1>
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          Login
+        </h2>
 
-        <p className="text-center text-gray-400 mb-6">
-          Login to continue AI Code Review
-        </p>
-
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
 
           <input
             type="email"
+            name="email"
             placeholder="Email"
-            className="w-full p-3 rounded-lg bg-gray-800 text-white outline-none focus:ring-2 focus:ring-purple-500"
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleChange}
+            className="w-full p-3 rounded bg-black/40 outline-none"
+            required
           />
 
           <input
             type="password"
+            name="password"
             placeholder="Password"
-            className="w-full p-3 rounded-lg bg-gray-800 text-white outline-none focus:ring-2 focus:ring-purple-500"
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handleChange}
+            className="w-full p-3 rounded bg-black/40 outline-none"
+            required
           />
 
           <button
             type="submit"
-            className="w-full bg-purple-600 hover:bg-purple-700 transition p-3 rounded-lg font-semibold"
+            className="w-full bg-purple-600 hover:bg-purple-700 py-3 rounded font-semibold"
           >
             Login
           </button>
 
         </form>
 
-        <p className="text-center text-gray-400 mt-4 text-sm">
-          Don’t have an account?{" "}
-          <Link to="/register" className="text-purple-400 hover:underline">
+        <p className="text-gray-400 text-sm mt-4 text-center">
+          Don't have an account?{" "}
+          <Link to="/register" className="text-purple-400">
             Register
           </Link>
         </p>

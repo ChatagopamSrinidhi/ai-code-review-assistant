@@ -1,41 +1,94 @@
 from flask import Blueprint, request, jsonify
+from groq import Groq
+import os
+import json
 
 review_bp = Blueprint('review', __name__)
 
+# ---------------- GROQ CLIENT ----------------
+client = Groq(
+    api_key=os.getenv("GEMINI_API_KEY")  # using your gsk_ key
+)
+
 @review_bp.route('/analyze', methods=['POST'])
 def analyze_code():
-    data = request.get_json()
+    try:
+        data = request.get_json()
 
-    code = data.get("code", "")
-    language = data.get("language", "python")
+        code = data.get("code", "")
+        language = data.get("language", "python")
 
-    issues = []
+        # ---------------- EMPTY CHECK ----------------
+        if not code.strip():
+            return jsonify({
+                "error": "Code cannot be empty"
+            }), 400
 
-    # ---------- REAL CHECKS ----------
+        # ---------------- PROMPT ----------------
+        prompt = f"""
+You are an expert AI code reviewer.
 
-    if "(" in code and ")" not in code:
-        issues.append("Missing closing parenthesis ')'")
+Analyze the following {language} code carefully.
 
-    if "{" in code and "}" not in code:
-        issues.append("Missing closing brace '}'")
+CODE:
+{code}
 
-    if language == "python":
-        if "print(" in code and (code.count('"') % 2 != 0 and code.count("'") % 2 != 0):
-            issues.append("Possible string syntax issue in print statement")
+Return ONLY valid JSON in this exact format:
 
-    if "/ 0" in code or "/0" in code:
-        issues.append("Possible division by zero")
+{{
+  "summary": "short summary",
+  "issues": ["issue1", "issue2"],
+  "suggestions": ["suggestion1", "suggestion2"],
+  "improved_code": "fixed code here"
+}}
 
-    if len(code.strip()) == 0:
-        return jsonify({"error": "Empty code"}), 400
+Rules:
+- Return ONLY JSON
+- No markdown
+- No explanation
+- Detect syntax errors
+- Detect logical issues
+- Provide corrected code
+"""
 
-    if not issues:
-        issues.append("No major issues found")
+        # ---------------- AI RESPONSE ----------------
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            temperature=0.3
+        )
 
-    improved_code = f"""# Improved Code\n{code}\n\n# Suggestion: add comments + error handling"""
+        text = response.choices[0].message.content.strip()
 
-    return jsonify({
-        "summary": f"{language} code analyzed",
-        "issues": "\n".join(issues),
-        "improved_code": improved_code
-    })
+        # ---------------- CLEAN JSON ----------------
+        text = text.replace("```json", "").replace("```", "").strip()
+
+        # ---------------- JSON PARSE ----------------
+        try:
+            result = json.loads(text)
+
+            return jsonify({
+                "summary": result.get("summary", "Analysis completed"),
+                "issues": result.get("issues", []),
+                "suggestions": result.get("suggestions", []),
+                "improved_code": result.get("improved_code", code)
+            }), 200
+
+        except Exception:
+            return jsonify({
+                "summary": "Analysis completed",
+                "issues": ["Could not parse AI response"],
+                "suggestions": ["Try again with cleaner code"],
+                "improved_code": code,
+                "raw_output": text
+            }), 200
+
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500

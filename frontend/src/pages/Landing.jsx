@@ -2,33 +2,42 @@ import { Link } from "react-router-dom";
 
 export default function Landing() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
+    <div className="min-h-screen text-white">
 
-      <h1 className="text-5xl font-bold text-white mb-4">
-        AI Code Review Assistant
-      </h1>
+      {/* HERO */}
+      <div className="text-center px-6 py-24">
+        <h1 className="text-5xl font-bold mb-4">
+          AI Code Review Assistant
+        </h1>
 
-      <p className="text-gray-300 text-lg max-w-2xl mb-8">
-        Instantly analyze your code using AI. Get suggestions for bugs, improvements,
-        performance issues, and best practices powered by Gemini AI.
-      </p>
+        <p className="text-gray-400 text-lg max-w-xl mx-auto">
+          Get instant AI-powered feedback on your code. Improve quality, reduce bugs, and write cleaner software.
+        </p>
 
-      <div className="flex gap-4">
-        <Link
-          to="/login"
-          className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg text-white font-semibold"
-        >
-          Login
-        </Link>
+        <div className="mt-8 flex justify-center gap-4">
+          <Link to="/register" className="btn-primary">
+            Get Started
+          </Link>
 
-        <Link
-          to="/register"
-          className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-semibold"
-        >
-          Register
-        </Link>
+          <Link to="/login" className="px-5 py-3 rounded-xl border border-white/20">
+            Login
+          </Link>
+        </div>
       </div>
 
+      {/* FEATURES */}
+      <div className="grid md:grid-cols-3 gap-6 px-10 py-10">
+        {[
+          { title: "AI Analysis", desc: "Smart code review using AI" },
+          { title: "Instant Feedback", desc: "Get results in seconds" },
+          { title: "Clean Code Tips", desc: "Improve coding standards" },
+        ].map((f, i) => (
+          <div key={i} className="glass p-6">
+            <h3 className="text-xl font-semibold">{f.title}</h3>
+            <p className="text-gray-400 mt-2">{f.desc}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

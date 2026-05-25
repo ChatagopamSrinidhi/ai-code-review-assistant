@@ -1,46 +1,84 @@
-import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import BackButton from "../components/Layout/BackButton";
 
 export default function Dashboard() {
-  const { user, logout } = useAuth();
-
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
+    <div className="min-h-screen flex bg-[#0b0f19] text-white">
 
-      <div className="flex justify-between items-center mb-10">
-        <h1 className="text-3xl font-bold">
-          Welcome, {user?.username || "User"} 👋
-        </h1>
+      {/* BACK BUTTON */}
+      <BackButton />
 
-        <button
-          onClick={logout}
-          className="bg-red-500 px-4 py-2 rounded"
-        >
-          Logout
-        </button>
+      {/* SIDEBAR */}
+      <div className="w-64 p-6 bg-white/5 border-r border-white/10 backdrop-blur-md">
+        <h2 className="text-xl font-bold mb-8">
+          AI Code Review
+        </h2>
+
+        <nav className="space-y-4">
+          <Link
+            to="/dashboard"
+            className="block text-gray-300 hover:text-white transition"
+          >
+            Dashboard
+          </Link>
+
+          <Link
+            to="/review"
+            className="block text-gray-300 hover:text-white transition"
+          >
+            Code Review
+          </Link>
+        </nav>
       </div>
 
-      <div className="grid gap-6">
+      {/* MAIN CONTENT */}
+      <div className="flex-1 p-10">
 
-        <div className="bg-gray-800 p-6 rounded-xl">
-          <h2 className="text-xl font-semibold mb-2">
-            AI Code Review
+        <h1 className="text-3xl font-bold mb-8">
+          Welcome Back 👋
+        </h1>
+
+        {/* STATS GRID */}
+        <div className="grid md:grid-cols-3 gap-6">
+
+          <div className="bg-white/5 border border-white/10 p-6 rounded-xl">
+            <h3 className="text-gray-400">Total Reviews</h3>
+            <p className="text-3xl font-bold mt-2">24</p>
+          </div>
+
+          <div className="bg-white/5 border border-white/10 p-6 rounded-xl">
+            <h3 className="text-gray-400">Issues Found</h3>
+            <p className="text-3xl font-bold mt-2">87</p>
+          </div>
+
+          <div className="bg-white/5 border border-white/10 p-6 rounded-xl">
+            <h3 className="text-gray-400">Code Score</h3>
+            <p className="text-3xl font-bold mt-2 text-green-400">
+              A+
+            </p>
+          </div>
+
+        </div>
+
+        {/* QUICK ACTION */}
+        <div className="mt-10 bg-white/5 border border-white/10 p-6 rounded-xl">
+          <h2 className="text-xl font-semibold mb-3">
+            Quick Action
           </h2>
 
           <p className="text-gray-400 mb-4">
-            Analyze your code using Gemini AI
+            Start analyzing your code instantly with AI-powered review.
           </p>
 
           <Link
             to="/review"
-            className="bg-purple-600 px-4 py-2 rounded"
+            className="inline-block bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold"
           >
-            Start Review
+            Start Code Review →
           </Link>
         </div>
 
       </div>
-
     </div>
   );
 }
