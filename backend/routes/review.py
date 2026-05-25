@@ -7,7 +7,7 @@ review_bp = Blueprint('review', __name__)
 
 # ---------------- GROQ CLIENT ----------------
 client = Groq(
-    api_key=os.getenv("GEMINI_API_KEY")  # using your gsk_ key
+    api_key=os.getenv("GROQ_API_KEY")  # using your gsk_ key
 )
 
 @review_bp.route('/analyze', methods=['POST'])
@@ -92,3 +92,4 @@ Rules:
         return jsonify({
             "error": str(e)
         }), 500
+    
